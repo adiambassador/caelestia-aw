@@ -40,6 +40,8 @@ This repo contains the installer, patcher, and uninstaller. The actual code live
 - **Intelligent pausing:**  wallpaper pauses while on battery power or when a fullscreen app is active.
 - **Real-time preview:**  scroll through the animated library and the wallpaper changes live.
 - **Software decoding:**  consistent performance across all hardware, no driver dependency.
+- **Keyboard Sync**: Syncs the primary color of the applied theme with the keyboard's RGB.
+  Currently works only on Asus TUF and ROG laptops using asusctl.
 
 ------
 

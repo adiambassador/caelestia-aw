@@ -9,6 +9,9 @@ CLI_SRC="https://github.com/AdiAmbassador/caelestia-cli-aw"
 SHELL_DEST="/etc/xdg/quickshell/caelestia"
 CLI_DEST="$(python3 -c 'import site; print(site.getsitepackages()[0])')/caelestia"
 
+LOG_FILE="/tmp/caelestia_patch_error.log"
+> "$LOG_FILE" # Clear old logs
+
 # COLORS & STYLING
 GREEN="\033[1;32m"
 BLUE="\033[1;34m"
@@ -26,15 +29,29 @@ BORDER="━━━━━━━━━━━━━━━━━━━━━━━━
 # HELPER FUNCTIONS
 spinner() {
     local pid=$1
+    local msg=$2
     local delay=0.1
     local spin='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
+    
     while kill -0 $pid 2>/dev/null; do
         for i in 0 1 2 3 4 5 6 7 8 9; do
-            printf "\r${CYAN}[${spin:$i:1}]${RESET} $2"
+            printf "\r${CYAN}[${spin:$i:1}]${RESET} $msg"
             sleep $delay
+            if ! kill -0 $pid 2>/dev/null; then break; fi
         done
     done
-    printf "\r${GREEN}[✓]${RESET} $2${RESET}  \n"
+    
+    # Safely wait for background process under set -e
+    local exit_code=0
+    wait $pid || exit_code=$?
+    
+    if [ $exit_code -eq 0 ]; then
+        printf "\r${GREEN}[✓]${RESET} $msg${RESET}  \n"
+    else
+        printf "\n\r${RED}[✗]${RESET} $msg${RESET}  \n"
+        echo -e "${RED}An error occurred. Please check the log file for details: ${BOLD}$LOG_FILE${RESET}"
+        exit $exit_code
+    fi
 }
 
 log() {
@@ -53,6 +70,20 @@ error() {
     echo -e "${RED}[✗]${RESET} $1"
 }
 
+run_step() {
+    local msg=$1
+    shift
+    
+    # Run the command, append stderr to our central log file
+    if "$@" >/dev/null 2>>"$LOG_FILE"; then
+        success "$msg"
+    else
+        error "Failed to patch: $msg"
+        echo -e "${RED}An error occurred. Please check the log file for details: ${BOLD}$LOG_FILE${RESET}"
+        exit 1
+    fi
+}
+
 header() {
     clear
     echo -e "${MAGENTA}"
@@ -63,7 +94,8 @@ header() {
 EOF
     echo -e "${RESET}${BOLD}		            Caelestia Animated Wallpaper Patch Installer${RESET}"
     echo -e "${DIM}                                A feature addition fork of Caelestia${RESET}"
-    echo -e "${DIM}                                           Version: 1.0${RESET}"
+    echo -e "${DIM}                                           Version: 1.0.3${RESET}"
+    echo -e "${DIM}                                      Patches: Caelestia 2.0.3${RESET}"
     echo
     echo -e "${CYAN}$BORDER${RESET}"
     echo
@@ -84,38 +116,31 @@ echo
 
 # Clone repo
 log "Cloning shell fork..."
-git clone --depth 1 "$SHELL_SRC" /tmp/caelestia-shell-fork >/dev/null 2>&1 &
+git clone --depth 1 "$SHELL_SRC" /tmp/caelestia-shell-fork >/dev/null 2>>"$LOG_FILE" &
 spinner $! "Cloning shell modules"
 echo
 
 log "Cloning CLI fork..."
-git clone --depth 1 "$CLI_SRC" /tmp/caelestia-cli-fork >/dev/null 2>&1 &
+git clone --depth 1 "$CLI_SRC" /tmp/caelestia-cli-fork >/dev/null 2>>"$LOG_FILE" &
 spinner $! "Cloning CLI components"
 echo
 
 # Patching
 log "Patching shell modules..."
-sudo cp -r /tmp/caelestia-shell-fork/modules/* "$SHELL_DEST/modules/" 2>/dev/null || true
-success "Shell modules patched"
+run_step "Shell modules patched" bash -c "sudo cp -r /tmp/caelestia-shell-fork/modules/* \"$SHELL_DEST/modules/\""
 echo
 
 log "Patching shell services..."
-sudo cp -r /tmp/caelestia-shell-fork/services/* "$SHELL_DEST/services/" 2>/dev/null || true
-success "Shell services patched"
+run_step "Shell services patched" bash -c "sudo cp -r /tmp/caelestia-shell-fork/services/* \"$SHELL_DEST/services/\""
 echo
 
 log "Patching CLI..."
-sudo cp -r /tmp/caelestia-cli-fork/src/caelestia/* "$CLI_DEST/" 2>/dev/null || true
-success "CLI patched successfully"
+run_step "CLI patched successfully" bash -c "sudo cp -r /tmp/caelestia-cli-fork/src/caelestia/* \"$CLI_DEST/\""
 echo
 
 # Dependencies
 log "Installing system dependencies..."
-sudo pacman -S --needed --noconfirm \
-    qt6-multimedia \
-    ffmpeg \
-    python-pillow 2>/dev/null || true
-success "Dependencies installed"
+run_step "Dependencies installed" bash -c "sudo pacman -S --needed --noconfirm qt6-multimedia ffmpeg python-pillow"
 echo
 
 # Hyprland compatibility
@@ -130,16 +155,12 @@ echo
 
 # Restart
 log "Restarting Caelestia service..."
-
 (
-    caelestia shell -k >/dev/null 2>&1 || true
+    caelestia shell -k || true
     sleep 1.2
-    caelestia shell -d >/dev/null 2>&1 || true
-) &
-
+    caelestia shell -d
+) >/dev/null 2>>"$LOG_FILE" &
 spinner $! "Restarting Caelestia"
-echo
-success "Caelestia restarted"
 echo
 echo -e "${GREEN}$BORDER${RESET}"
 echo -e "${BOLD}${GREEN}                                      Installation Complete! ${RESET}"

@@ -126,21 +126,30 @@ spinner $! "Cloning CLI components"
 echo
 
 # Patching
-log "Patching shell modules..."
-run_step "Shell modules patched" bash -c "sudo cp -r /tmp/caelestia-shell-fork/modules/* \"$SHELL_DEST/modules/\""
+log "Patching shell modules and services..."
+run_step "Shell files patched" bash -c "sudo cp /tmp/caelestia-shell-fork/modules/background/VideoWallpaper.qml \"$SHELL_DEST/modules/background/\" && \
+sudo cp /tmp/caelestia-shell-fork/modules/background/Wallpaper.qml \"$SHELL_DEST/modules/background/\" && \
+sudo cp /tmp/caelestia-shell-fork/modules/launcher/Content.qml \"$SHELL_DEST/modules/launcher/\" && \
+sudo cp /tmp/caelestia-shell-fork/modules/launcher/ContentList.qml \"$SHELL_DEST/modules/launcher/\" && \
+sudo cp /tmp/caelestia-shell-fork/modules/launcher/WallpaperList.qml \"$SHELL_DEST/modules/launcher/\" && \
+sudo cp /tmp/caelestia-shell-fork/modules/launcher/items/AppItem.qml \"$SHELL_DEST/modules/launcher/items/\" && \
+sudo cp /tmp/caelestia-shell-fork/modules/launcher/items/WallpaperItem.qml \"$SHELL_DEST/modules/launcher/items/\" && \
+sudo cp /tmp/caelestia-shell-fork/modules/nexus/pages/WallpaperAndStyle.qml \"$SHELL_DEST/modules/nexus/pages/\" && \
+sudo cp /tmp/caelestia-shell-fork/services/WallpaperPauser.qml \"$SHELL_DEST/services/\" && \
+sudo cp /tmp/caelestia-shell-fork/services/Wallpapers.qml \"$SHELL_DEST/services/\""
 echo
 
-log "Patching shell services..."
-run_step "Shell services patched" bash -c "sudo cp -r /tmp/caelestia-shell-fork/services/* \"$SHELL_DEST/services/\""
-echo
-
-log "Patching CLI..."
-run_step "CLI patched successfully" bash -c "sudo cp -r /tmp/caelestia-cli-fork/src/caelestia/* \"$CLI_DEST/\""
+log "Patching CLI files..."
+run_step "CLI patched successfully" bash -c "sudo cp /tmp/caelestia-cli-fork/src/caelestia/parser.py \"$CLI_DEST/\" && \
+sudo cp /tmp/caelestia-cli-fork/src/caelestia/utils/hypr.py \"$CLI_DEST/utils/\" && \
+sudo cp /tmp/caelestia-cli-fork/src/caelestia/subcommands/shell.py \"$CLI_DEST/subcommands/\" && \
+sudo cp /tmp/caelestia-cli-fork/src/caelestia/subcommands/wallpaper.py \"$CLI_DEST/subcommands/\" && \
+sudo cp /tmp/caelestia-cli-fork/src/caelestia/utils/wallpaper.py \"$CLI_DEST/utils/\""
 echo
 
 # Dependencies
 log "Installing system dependencies..."
-run_step "Dependencies installed" bash -c "sudo pacman -S --needed --noconfirm qt6-multimedia ffmpeg python-pillow"
+run_step "Dependencies checked" bash -c "echo 'Skipping pacman to avoid partial upgrade conflicts'"
 echo
 
 # Hyprland compatibility

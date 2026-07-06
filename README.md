@@ -22,7 +22,7 @@ https://github.com/user-attachments/assets/47f61a0c-7610-493e-8a5c-aeed5731cdc2
 
 Caelestia-AW is a patch that adds **native animated/video wallpaper support** to Caelestia. It extends the wallpaper picker with a dedicated animated section, generates thumbnails for video files, and integrates fully with Caelestia's Material You dynamic color system.
 
-This repo contains the installer, patcher, and uninstaller. The actual code lives in two companion repos:
+This repo contains the  patcher, and uninstaller. The actual code lives in two companion repos:
 
 | Repo                                                         | What it changes                                              |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -40,8 +40,7 @@ This repo contains the installer, patcher, and uninstaller. The actual code live
 - **Intelligent pausing:**  wallpaper pauses while on battery power or when a fullscreen app is active.
 - **Real-time preview:**  scroll through the animated library and the wallpaper changes live.
 - **Software decoding:**  consistent performance across all hardware, no driver dependency.
-- **Keyboard Sync**: Syncs the primary color of the applied theme with the keyboard's RGB.
-  Currently works only on Asus TUF and ROG laptops using asusctl.
+- **Hardware Decoding:** Added hardware decoders like VAAPI, VDPAU, VULKAN, CUDA and DRM. 
 
 ------
 
@@ -58,11 +57,11 @@ This repo contains the installer, patcher, and uninstaller. The actual code live
 
 ### Fresh install; Caelestia not yet installed
 
-This installs vanilla Caelestia first, then applies the animated wallpaper patch on top.
+Install Caelestia CLI via AUR helper like yay or paru and install:
 
 ```bash
-git clone https://github.com/caelestia-dots/caelestia.git ~/.local/share/caelestia
-~/.local/share/caelestia/install.fish 
+yay -S caelestia-cli
+caelestia install
 ```
 
 
@@ -91,7 +90,6 @@ The patch script will:
 
 1. Copy the modified shell and CLI files into place.
 2. Install the required dependencies (`qt6-multimedia`, `ffmpeg`, `python-pillow`)
-3. Add a software decoding environment variable to your Hyprland config.
 4. Restart Caelestia automatically.
 
 
@@ -115,6 +113,21 @@ Open the launcher (`Super, >wallpaper ` by default), switch to the **Animated** 
 Thumbnails are cached at `~/.cache/caelestia/videothumbs/` and only regenerate when a video file is modified.
 
 
+
+------
+
+#### Note on Hardware Decoders:
+
+Hardware decoder support is an experimental feature added alongside Caelestia 2.1.0 compatibility patch. It is available in Caelestia Nexus settings.
+Users need to manually install necessary drivers to use HW decode.
+QtMultimedia will fallback to software decoding if currently selected decoder driver is unavailable.
+Observed  behaviour in my system:
+
+VAAPI: Ideal; minimal CPU usage; no lags while browsing wallpapers.
+VDPAU: Legacy support; Not much better than software decoding; no lags while browsing wallpapers.
+CUDA: minimal CPU usage; slight lag in each wallpaper change.
+VULKAN: minimal CPU usage; near 2s lag once. 
+DRM: Nearly equal CPU usage to software decoding; no lags while browsing wallpapers.
 
 ------
 
@@ -144,7 +157,7 @@ bash patch.sh
 ```
 
 This re-applies the patch on top of whatever version of Caelestia is currently supported.
-Current v1.0 of Caelestia-AW patches Caelestia-2.0.2.
+Current v1.1.1 of Caelestia-AW patches Caelestia-2.1.0.
 
 > **Note:** Updates to Caelestia-AW may be delayed from upstream Caelestia by a few or several days due to unforeseen compatibility issues. If you update vanilla Caelestia and something breaks, re-running `patch.sh` from the latest Caelestia-AW will resolve it.
 
@@ -155,7 +168,7 @@ Current v1.0 of Caelestia-AW patches Caelestia-2.0.2.
 If you update `caelestia-shell` or `caelestia-cli` via your AUR helper, the patch will be overwritten.
 
 ```bash
-yay -Syu caelestia-shell caelestia-cli   # update upstream
+yay -S caelestia-shell caelestia-cli --overwrite '*'   # update upstream and overwrite
 bash patch.sh                             # re-apply AW patch
 ```
 
@@ -177,9 +190,11 @@ This reinstalls the official `caelestia-shell` and `caelestia-cli` packages from
 
 ## Known Limitations
 
-- **Software decoding only:**  hardware acceleration (VAAPI, CUDA, Vulkan) is intentionally disabled for consistent cross-hardware behavior. On lower-end machines, high-resolution 4K wallpapers may impact performance.
-- **Arch Linux only:**  the installer uses `pacman` and an AUR helper. Other distributions are not supported.
-- **Upstream updates:**  updating `caelestia-shell` or `caelestia-cli` via your AUR helper will overwrite the patch. Re-run `patch.sh` after any upstream update. 
+~~**Software decoding only:**  hardware acceleration (VAAPI, CUDA, Vulkan) is intentionally disabled for consistent cross-hardware behavior. On lower-end machines, high-resolution 4K wallpapers may impact performance.~~
+
+**Arch Linux only:**  the installer uses `pacman` and an AUR helper. Other distributions are not supported.
+
+**Upstream updates:**  updating `caelestia-shell` or `caelestia-cli` via your AUR helper will overwrite the patch. Re-run `patch.sh` after any upstream update. 
 
 ------
 

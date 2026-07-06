@@ -3,8 +3,8 @@
 set -euo pipefail
 
 # CONFIG
-SHELL_SRC="https://github.com/AdiAmbassador/caelestia-shell-aw"
-CLI_SRC="https://github.com/AdiAmbassador/caelestia-cli-aw"
+SHELL_REPO="https://github.com/AdiAmbassador/caelestia-shell-aw.git"
+CLI_REPO="https://github.com/AdiAmbassador/caelestia-cli-aw.git"
 
 SHELL_DEST="/etc/xdg/quickshell/caelestia"
 CLI_DEST="$(python3 -c 'import site; print(site.getsitepackages()[0])')/caelestia"
@@ -115,36 +115,28 @@ echo -e "${MAGENTA}Starting installation of Caelestia Animated Wallpaper patches
 echo
 
 # Clone repo
-log "Cloning shell fork..."
-git clone --depth 1 "$SHELL_SRC" /tmp/caelestia-shell-fork >/dev/null 2>>"$LOG_FILE" &
-spinner $! "Cloning shell modules"
+log "Cloning online shell fork..."
+git clone --depth 1 "$SHELL_REPO" /tmp/caelestia-shell-fork >/dev/null 2>>"$LOG_FILE" &
+spinner $! "Cloning shell repo"
 echo
 
-log "Cloning CLI fork..."
-git clone --depth 1 "$CLI_SRC" /tmp/caelestia-cli-fork >/dev/null 2>>"$LOG_FILE" &
-spinner $! "Cloning CLI components"
+log "Cloning online CLI fork..."
+git clone --depth 1 "$CLI_REPO" /tmp/caelestia-cli-fork >/dev/null 2>>"$LOG_FILE" &
+spinner $! "Cloning CLI repo"
+echo
+
+# Clean up C++ build files and git artifacts before copying
+log "Cleaning up build artifacts..."
+run_step "Cleaned up" bash -c "rm -rf /tmp/caelestia-shell-fork/.git /tmp/caelestia-shell-fork/flake.nix /tmp/caelestia-shell-fork/flake.lock /tmp/caelestia-shell-fork/CMakeLists.txt /tmp/caelestia-shell-fork/plugin /tmp/caelestia-cli-fork/.git"
 echo
 
 # Patching
 log "Patching shell modules and services..."
-run_step "Shell files patched" bash -c "sudo cp /tmp/caelestia-shell-fork/modules/background/VideoWallpaper.qml \"$SHELL_DEST/modules/background/\" && \
-sudo cp /tmp/caelestia-shell-fork/modules/background/Wallpaper.qml \"$SHELL_DEST/modules/background/\" && \
-sudo cp /tmp/caelestia-shell-fork/modules/launcher/Content.qml \"$SHELL_DEST/modules/launcher/\" && \
-sudo cp /tmp/caelestia-shell-fork/modules/launcher/ContentList.qml \"$SHELL_DEST/modules/launcher/\" && \
-sudo cp /tmp/caelestia-shell-fork/modules/launcher/WallpaperList.qml \"$SHELL_DEST/modules/launcher/\" && \
-sudo cp /tmp/caelestia-shell-fork/modules/launcher/items/AppItem.qml \"$SHELL_DEST/modules/launcher/items/\" && \
-sudo cp /tmp/caelestia-shell-fork/modules/launcher/items/WallpaperItem.qml \"$SHELL_DEST/modules/launcher/items/\" && \
-sudo cp /tmp/caelestia-shell-fork/modules/nexus/pages/WallpaperAndStyle.qml \"$SHELL_DEST/modules/nexus/pages/\" && \
-sudo cp /tmp/caelestia-shell-fork/services/WallpaperPauser.qml \"$SHELL_DEST/services/\" && \
-sudo cp /tmp/caelestia-shell-fork/services/Wallpapers.qml \"$SHELL_DEST/services/\""
+run_step "Shell files patched" bash -c "sudo cp -a /tmp/caelestia-shell-fork/. \"$SHELL_DEST/\""
 echo
 
 log "Patching CLI files..."
-run_step "CLI patched successfully" bash -c "sudo cp /tmp/caelestia-cli-fork/src/caelestia/parser.py \"$CLI_DEST/\" && \
-sudo cp /tmp/caelestia-cli-fork/src/caelestia/utils/hypr.py \"$CLI_DEST/utils/\" && \
-sudo cp /tmp/caelestia-cli-fork/src/caelestia/subcommands/shell.py \"$CLI_DEST/subcommands/\" && \
-sudo cp /tmp/caelestia-cli-fork/src/caelestia/subcommands/wallpaper.py \"$CLI_DEST/subcommands/\" && \
-sudo cp /tmp/caelestia-cli-fork/src/caelestia/utils/wallpaper.py \"$CLI_DEST/utils/\""
+run_step "CLI patched successfully" bash -c "sudo cp -a /tmp/caelestia-cli-fork/src/caelestia/. \"$CLI_DEST/\""
 echo
 
 # Dependencies

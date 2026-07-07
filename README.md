@@ -22,7 +22,7 @@ https://github.com/user-attachments/assets/47f61a0c-7610-493e-8a5c-aeed5731cdc2
 
 Caelestia-AW is a patch that adds **native animated/video wallpaper support** to Caelestia. It extends the wallpaper picker with a dedicated animated section, generates thumbnails for video files, and integrates fully with Caelestia's Material You dynamic color system.
 
-This repo contains the  patcher. The actual code lives in two companion repos:
+This repo contains the  patcher and uninstall script. The actual code lives in two companion repos:
 
 | Repo                                                         | What it changes                                              |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -30,6 +30,13 @@ This repo contains the  patcher. The actual code lives in two companion repos:
 | [caelestia-cli-aw](https://github.com/AdiAmbassador/caelestia-cli-aw) | Python: video thumbnail generation, ffmpeg integration, Material You color extraction from video. |
 
 ------
+
+### Warning:
+
+This patch repository as well as the parent repository are known to not work properly in arch based distros like CachyOS, EndevourOS and Manjaro.
+This intended only for Arch Linux. 
+
+
 
 ## Features
 
@@ -90,7 +97,31 @@ The patch script will:
 
 1. Copy the modified shell and CLI files into place.
 2. Install the required dependencies (`qt6-multimedia`, `ffmpeg`, `python-pillow`)
-4. Restart Caelestia automatically.
+3. Restart Caelestia automatically.
+
+------
+
+
+
+## Uninstall
+
+cd over to the Caelestia-AW dotfiles clone, usually in:
+
+```bash
+cd ~/.local/share/caelestia-aw
+```
+
+Run:
+
+```bash
+bash uninstall.sh
+```
+
+Alternate method:
+
+```bash
+yay -S caelestia-cli caelestia-shell --overwrite '*'
+```
 
 
 

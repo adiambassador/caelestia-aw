@@ -49,6 +49,16 @@ EOF
     echo
 }
 
+detect_aur_helper() {
+    if command -v paru >/dev/null 2>&1; then
+        echo "paru"
+    elif command -v yay >/dev/null 2>&1; then
+        echo "yay"
+    else
+        echo ""
+    fi
+}
+
 # main
 header
 

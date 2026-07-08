@@ -141,7 +141,7 @@ echo
 
 # Dependencies
 log "Installing system dependencies..."
-run_step "Dependencies checked" bash -c "sudo pacman -S --needed --noconfirm ffmpeg qt6-multimedia qt6-multimedia-ffmpeg"
+run_step "Dependencies checked" bash -c "sudo pacman -S --needed --noconfirm --overwrite '*' ffmpeg qt6-multimedia qt6-multimedia-ffmpeg"
 echo
 
 # Hyprland compatibility
@@ -158,7 +158,7 @@ echo
 log "Restarting Caelestia service..."
 (
     caelestia shell -k || true
-    sleep 1.2
+    sleep 1.5
 ) >/dev/null 2>>"$LOG_FILE" &
 spinner $! "Stopping Caelestia"
 

@@ -14,6 +14,7 @@
 
 https://github.com/user-attachments/assets/47f61a0c-7610-493e-8a5c-aeed5731cdc2
 
+</div>
 ------
 
 
@@ -152,13 +153,13 @@ Thumbnails are cached at `~/.cache/caelestia/videothumbs/` and only regenerate w
 Hardware decoder support is an experimental feature added alongside Caelestia 2.1.0 compatibility patch. It is available in Caelestia Nexus settings.
 Users need to manually install necessary drivers to use HW decode.
 QtMultimedia will fallback to software decoding if currently selected decoder driver is unavailable.
-Observed  behaviour in my system:
+Observed behaviour in my system:
 
-VAAPI: Ideal; minimal CPU usage; no lags while browsing wallpapers.
-VDPAU: Legacy support; Not much better than software decoding; no lags while browsing wallpapers.
-CUDA: minimal CPU usage; slight lag in each wallpaper change.
-VULKAN: minimal CPU usage; near 2s lag once. 
-DRM: Nearly equal CPU usage to software decoding; no lags while browsing wallpapers.
+- **VAAPI**: Ideal; minimal CPU usage; no lags while browsing wallpapers.
+- **VDPAU**: Legacy support; Not much better than software decoding; no lags while browsing wallpapers.
+- **CUDA**: minimal CPU usage; slight lag in each wallpaper change.
+- **VULKAN**: minimal CPU usage; near 2s lag once. 
+- **DRM**: Nearly equal CPU usage to software decoding; no lags while browsing wallpapers.
 
 ------
 

@@ -14,7 +14,6 @@
 
 https://github.com/user-attachments/assets/47f61a0c-7610-493e-8a5c-aeed5731cdc2
 
-</div>
 ------
 
 
@@ -148,6 +147,8 @@ Thumbnails are cached at `~/.cache/caelestia/videothumbs/` and only regenerate w
 
 ------
 
+</div>
+
 #### Note on Hardware Decoders:
 
 Hardware decoder support is an experimental feature added alongside Caelestia 2.1.0 compatibility patch. It is available in Caelestia Nexus settings.
@@ -163,7 +164,7 @@ Observed behaviour in my system:
 
 ------
 
-
+<div align="center">
 
 ## Updating:
 
@@ -244,3 +245,4 @@ For complete installation instructions, configuration options, and documentation
 
 https://github.com/caelestia-dots/caelestia
 
+</div>

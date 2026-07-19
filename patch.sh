@@ -94,8 +94,8 @@ header() {
 EOF
     echo -e "${RESET}${BOLD}		            Caelestia Animated Wallpaper Patch Installer${RESET}"
     echo -e "${DIM}                                A feature addition fork of Caelestia${RESET}"
-    echo -e "${DIM}                                           Version: 1.1.2${RESET}"
-    echo -e "${DIM}                                      Patches: Caelestia 2.1.0${RESET}"
+    echo -e "${DIM}                                           Version: 1.1.3${RESET}"
+    echo -e "${DIM}                                      Patches: Caelestia 2.2.0${RESET}"
     echo
     echo -e "${CYAN}$BORDER${RESET}"
     echo

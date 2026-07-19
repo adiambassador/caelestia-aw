@@ -160,7 +160,7 @@ Observed behaviour in my system:
 - **VDPAU**: Legacy support; Not much better than software decoding; no lags while browsing wallpapers.
 - **CUDA**: minimal CPU usage; slight lag in each wallpaper change.
 - **VULKAN**: minimal CPU usage; near 2s lag once. 
-- **DRM**: Nearly equal CPU usage to software decoding; no lags while browsing wallpapers.
+- **DRM**: Unable to test because of lack of possession of ARM device. 
 
 ------
 

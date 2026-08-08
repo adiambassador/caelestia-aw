@@ -192,6 +192,8 @@ bash patch.sh
 This re-applies the patch on top of whatever version of Caelestia is currently supported.
 Current v1.1.3 of Caelestia-AW patches Caelestia-2.2.0.
 
+The installer verifies the installed `caelestia-shell` version before changing files. It exits without applying the patch when the installed version is not 2.2.0.
+
 > **Note:** Updates to Caelestia-AW may be delayed from upstream Caelestia by a few or several days due to unforeseen compatibility issues. If you update vanilla Caelestia and something breaks, re-running `patch.sh` from the latest Caelestia-AW will resolve it.
 
 

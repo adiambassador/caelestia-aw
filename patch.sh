@@ -5,6 +5,10 @@ set -euo pipefail
 # CONFIG
 SHELL_REPO="https://github.com/AdiAmbassador/caelestia-shell-aw.git"
 CLI_REPO="https://github.com/AdiAmbassador/caelestia-cli-aw.git"
+# The AW shell's main branch now targets Caelestia 2.3. Pin the final 2.2-era
+# revision so this installer remains compatible with caelestia-shell 2.2.0.
+SHELL_REF="ecb72651321657cfa14571489f161e7bf7fc8422"
+SUPPORTED_SHELL_VERSION="2.2.0"
 
 SHELL_DEST="/etc/xdg/quickshell/caelestia"
 CLI_DEST="$(python3 -c 'import site; print(site.getsitepackages()[0])')/caelestia"
@@ -70,6 +74,22 @@ error() {
     echo -e "${RED}[✗]${RESET} $1"
 }
 
+verify_shell_version() {
+    if ! pacman -Q caelestia-shell >/dev/null 2>&1; then
+        error "caelestia-shell is not installed. Install Caelestia before applying this patch."
+        exit 1
+    fi
+
+    local installed_version
+    installed_version="$(pacman -Q caelestia-shell | awk '{print $2}' | sed -E 's/-[0-9]+$//')"
+
+    if [[ "$installed_version" != "$SUPPORTED_SHELL_VERSION" ]]; then
+        error "This patch supports caelestia-shell ${SUPPORTED_SHELL_VERSION}; found ${installed_version}."
+        echo -e "${YELLOW}Install the supported Caelestia version before applying this patch.${RESET}"
+        exit 1
+    fi
+}
+
 run_step() {
     local msg=$1
     shift
@@ -114,10 +134,15 @@ header
 echo -e "${MAGENTA}Starting installation of Caelestia Animated Wallpaper patches...${RESET}"
 echo
 
+verify_shell_version
+
 # Clone repo
 log "Cloning online shell fork..."
-git clone --depth 1 "$SHELL_REPO" /tmp/caelestia-shell-fork >/dev/null 2>>"$LOG_FILE" &
+git clone "$SHELL_REPO" /tmp/caelestia-shell-fork >/dev/null 2>>"$LOG_FILE" &
 spinner $! "Cloning shell repo"
+echo
+
+run_step "Checked out Caelestia 2.2-compatible shell revision" git -C /tmp/caelestia-shell-fork checkout --detach "$SHELL_REF"
 echo
 
 log "Cloning online CLI fork..."

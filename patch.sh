@@ -77,9 +77,7 @@ select_shell_ref() {
         exit 1
     fi
 
-    local installed_version
-    installed_version="$(pacman -Q caelestia-shell | awk '{print $2}' | sed -E 's/-[0-9]+$//')"
-
+    installed_version="$(pacman -Q caelestia-shell | awk '{print $2}' | sed -E 's/^[0-9]+://; s/-[0-9]+$//')"
     case "$installed_version" in
         2.2.0)
             SHELL_REF="ecb72651321657cfa14571489f161e7bf7fc8422"

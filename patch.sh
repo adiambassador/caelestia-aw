@@ -6,11 +6,11 @@ set -euo pipefail
 SHELL_REPO="https://github.com/AdiAmbassador/caelestia-shell-aw.git"
 CLI_REPO="https://github.com/AdiAmbassador/caelestia-cli-aw.git"
 
-SHELL_DEST="/etc/xdg/quickshell/caelestia"
 CLI_DEST="$(python3 -c 'import site; print(site.getsitepackages()[0])')/caelestia"
 
-LOG_FILE="/tmp/caelestia_patch_error.log"
-> "$LOG_FILE" # Clear old logs
+LOG_FILE="/tmp/caelestia_patch_${USER}.log"
+rm -f "$LOG_FILE" 2>/dev/null || true
+> "$LOG_FILE"
 
 # COLORS & STYLING
 GREEN="\033[1;32m"
@@ -84,6 +84,37 @@ run_step() {
     fi
 }
 
+run_compile_step() {
+    local msg=$1
+    shift
+
+    printf "${CYAN}[...]${RESET} %s..." "$msg"
+
+    local exit_code=0
+    while IFS= read -r line; do
+        if [[ "$line" =~ ^EXIT_CODE:([0-9]+)$ ]]; then
+            exit_code="${BASH_REMATCH[1]}"
+            break
+        fi
+
+        echo "$line" >> "$LOG_FILE"
+
+        if [[ "$line" =~ \[[[:space:]]*[0-9]+(/[0-9]+|%)\] ]]; then
+            local match
+            match=$(echo "$line" | grep -oE '\[[[:space:]]*[0-9]+(/[0-9]+|%)\]' | head -n1)
+            printf "\r${CYAN}%s${RESET} %s... \033[K" "$match" "$msg"
+        fi
+    done < <( "$@" 2>&1; echo "EXIT_CODE:$?" )
+
+    if [ "$exit_code" -eq 0 ]; then
+        printf "\r${GREEN}[✓]${RESET} %s \033[K\n" "$msg"
+    else
+        printf "\n\r${RED}[✗]${RESET} Failed: %s\n" "$msg"
+        echo -e "${RED}An error occurred. Please check the log file for details: ${BOLD}$LOG_FILE${RESET}"
+        exit 1
+    fi
+}
+
 header() {
     clear
     echo -e "${MAGENTA}"
@@ -95,7 +126,7 @@ EOF
     echo -e "${RESET}${BOLD}		            Caelestia Animated Wallpaper Patch Installer${RESET}"
     echo -e "${DIM}                                A feature addition fork of Caelestia${RESET}"
     echo -e "${DIM}                                           Version: 1.1.3${RESET}"
-    echo -e "${DIM}                                      Patches: Caelestia 2.2.0${RESET}"
+    echo -e "${DIM}                                      Patches: Caelestia 2.3.0${RESET}"
     echo
     echo -e "${CYAN}$BORDER${RESET}"
     echo
@@ -125,23 +156,26 @@ git clone --depth 1 "$CLI_REPO" /tmp/caelestia-cli-fork >/dev/null 2>>"$LOG_FILE
 spinner $! "Cloning CLI repo"
 echo
 
-# Clean up C++ build files and git artifacts before copying
-log "Cleaning up build artifacts..."
-run_step "Cleaned up" bash -c "rm -rf /tmp/caelestia-shell-fork/.git /tmp/caelestia-shell-fork/flake.nix /tmp/caelestia-shell-fork/flake.lock /tmp/caelestia-shell-fork/CMakeLists.txt /tmp/caelestia-shell-fork/plugin /tmp/caelestia-cli-fork/.git"
-echo
+# Dependencies
+log "Installing system dependencies..."
+if command -v pacman &>/dev/null; then
+    run_step "Dependencies checked" sudo pacman -S --needed --noconfirm --overwrite '*' ffmpeg qt6-multimedia qt6-multimedia-ffmpeg cmake ninja
+fi
 
 # Patching
-log "Patching shell modules and services..."
-run_step "Shell files patched" bash -c "sudo cp -a /tmp/caelestia-shell-fork/. \"$SHELL_DEST/\""
-echo
+log "Building and installing shell modules and services..."
+run_step "CMake configuration" cmake -B /tmp/caelestia-shell-fork/build \
+    -S /tmp/caelestia-shell-fork \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_SYSCONFDIR=/etc \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DVERSION="2.3.0"
+
+run_compile_step "Compiling C++ plugins" cmake --build /tmp/caelestia-shell-fork/build
+run_step "Shell files patched" sudo cmake --install /tmp/caelestia-shell-fork/build
 
 log "Patching CLI files..."
 run_step "CLI patched successfully" bash -c "sudo cp -a /tmp/caelestia-cli-fork/src/caelestia/. \"$CLI_DEST/\""
-echo
-
-# Dependencies
-log "Installing system dependencies..."
-run_step "Dependencies checked" bash -c "sudo pacman -S --needed --noconfirm --overwrite '*' ffmpeg qt6-multimedia qt6-multimedia-ffmpeg"
 echo
 
 # Hyprland compatibility

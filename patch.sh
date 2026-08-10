@@ -8,9 +8,7 @@ CLI_REPO="https://github.com/AdiAmbassador/caelestia-cli-aw.git"
 
 CLI_DEST="$(python3 -c 'import site; print(site.getsitepackages()[0])')/caelestia"
 
-LOG_FILE="/tmp/caelestia_patch_${USER}.log"
-rm -f "$LOG_FILE" 2>/dev/null || true
-> "$LOG_FILE"
+LOG_FILE="$(mktemp /tmp/caelestia_patch_XXXXXX.log)"
 
 # COLORS & STYLING
 GREEN="\033[1;32m"
@@ -75,7 +73,7 @@ run_step() {
     shift
     
     # Run the command, append stderr to our central log file
-    if "$@" >/dev/null 2>>"$LOG_FILE"; then
+    if "$@" &>>"$LOG_FILE"; then
         success "$msg"
     else
         error "Failed to patch: $msg"
@@ -125,7 +123,7 @@ header() {
 EOF
     echo -e "${RESET}${BOLD}		            Caelestia Animated Wallpaper Patch Installer${RESET}"
     echo -e "${DIM}                                A feature addition fork of Caelestia${RESET}"
-    echo -e "${DIM}                                           Version: 1.1.3${RESET}"
+    echo -e "${DIM}                                           Version: 1.1.2${RESET}"
     echo -e "${DIM}                                      Patches: Caelestia 2.3.0${RESET}"
     echo
     echo -e "${CYAN}$BORDER${RESET}"
@@ -205,5 +203,6 @@ echo -e "${GREEN}$BORDER${RESET}"
 echo
 echo -e " ${CYAN}Add your videos to:${RESET} ${BOLD}~/Pictures/Wallpapers/Animated${RESET}"
 echo -e " Open the launcher and ${YELLOW}refresh thumbnails${RESET} to see your videos."
+echo -e " ${DIM}Full log available at:${RESET} ${BOLD}$LOG_FILE${RESET}"
 echo
 echo

@@ -164,6 +164,7 @@ fi
 log "Building and installing shell modules and services..."
 run_step "CMake configuration" cmake -B /tmp/caelestia-shell-fork/build \
     -S /tmp/caelestia-shell-fork \
+    -G Ninja \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DCMAKE_INSTALL_SYSCONFDIR=/etc \
     -DCMAKE_BUILD_TYPE=Release \

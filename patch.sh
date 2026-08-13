@@ -157,7 +157,12 @@ echo
 # Dependencies
 log "Installing system dependencies..."
 if command -v pacman &>/dev/null; then
-    run_step "Dependencies checked" sudo pacman -S --needed --noconfirm --overwrite '*' ffmpeg qt6-multimedia qt6-multimedia-ffmpeg cmake ninja
+    run_step "Dependencies checked" bash -c '
+        MISSING=$(pacman -T ffmpeg qt6-multimedia qt6-multimedia-ffmpeg cmake ninja || true)
+        if [ -n "$MISSING" ]; then
+            sudo pacman -S --noconfirm --overwrite "*" $MISSING
+        fi
+    '
 fi
 
 # Patching

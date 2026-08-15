@@ -123,7 +123,7 @@ header() {
 EOF
     echo -e "${RESET}${BOLD}		            Caelestia Animated Wallpaper Patch Installer${RESET}"
     echo -e "${DIM}                                A feature addition fork of Caelestia${RESET}"
-    echo -e "${DIM}                                           Version: 1.1.2${RESET}"
+    echo -e "${DIM}                                           Version: 1.1.4${RESET}"
     echo -e "${DIM}                                      Patches: Caelestia 2.3.0${RESET}"
     echo
     echo -e "${CYAN}$BORDER${RESET}"
@@ -165,6 +165,18 @@ if command -v pacman &>/dev/null; then
     '
 fi
 
+# Check asusctl
+if ! command -v asusctl &>/dev/null; then
+    echo
+    echo -ne "${YELLOW}asusctl is not present in your system. If you have an asus laptop with RGB keyboard, you will need to install asusctl for keyboard sync to work. If not, ignore. Proceed with patching? [y/n]${RESET} "
+    read -r response
+    if [[ ! "$response" =~ ^[Yy]$ ]]; then
+        error "Installation aborted by user."
+        exit 1
+    fi
+    echo
+fi
+
 # Patching
 log "Building and installing shell modules and services..."
 run_step "CMake configuration" cmake -B /tmp/caelestia-shell-fork/build \
@@ -182,15 +194,7 @@ log "Patching CLI files..."
 run_step "CLI patched successfully" bash -c "sudo cp -a /tmp/caelestia-cli-fork/src/caelestia/. \"$CLI_DEST/\""
 echo
 
-# Hyprland compatibility
-if ! grep -q "QT_FFMPEG_DECODING_HW_DEVICE_TYPES" ~/.config/hypr/hyprland.conf 2>/dev/null; then
-    log "Adding Hyprland hardware decoding fix..."
-    echo 'env = QT_FFMPEG_DECODING_HW_DEVICE_TYPES,none' >> ~/.config/hypr/hyprland.conf
-    success "Hyprland compatibility setting added"
-else
-    warn "Hyprland compatibility setting already present"
-fi
-echo
+
 
 # Restart
 log "Restarting Caelestia service..."
@@ -211,4 +215,25 @@ echo -e " ${CYAN}Add your videos to:${RESET} ${BOLD}~/Pictures/Wallpapers/Animat
 echo -e " Open the launcher and ${YELLOW}refresh thumbnails${RESET} to see your videos."
 echo -e " ${DIM}Full log available at:${RESET} ${BOLD}$LOG_FILE${RESET}"
 echo
+echo
+echo -ne "${YELLOW}Would you like to check out the wallpapers repo[1] or clone it locally[2] ? [1/2/n]${RESET} "
+read -r wp_resp
+if [[ "$wp_resp" == "1" ]]; then
+    if command -v xdg-open &>/dev/null; then
+        xdg-open "https://github.com/adiambassador/wallpapers" &>/dev/null || true
+    fi
+    echo -e "${GREEN}Opening in browser...${RESET}"
+elif [[ "$wp_resp" == "2" ]]; then
+    log "Cloning wallpapers repo..."
+
+    DOTFILES_PARENT="$(dirname "$(dirname "$(realpath "$0")")")"
+    TARGET_DIR="$(dirname "$DOTFILES_PARENT")/wallpapers"
+
+    if [ ! -d "$TARGET_DIR" ]; then
+        git clone https://github.com/adiambassador/wallpapers.git "$TARGET_DIR"
+        success "Cloned wallpapers to $TARGET_DIR"
+    else
+        warn "Directory $TARGET_DIR already exists."
+    fi
+fi
 echo

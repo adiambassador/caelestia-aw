@@ -16,7 +16,7 @@ https://github.com/user-attachments/assets/47f61a0c-7610-493e-8a5c-aeed5731cdc2
 
 ------
 
-
+<div align="center"><sub><em>News: added v2.3.0 compatibility + keyboard RGB sync</em></sub></div>
 
 ## What is this?
 
@@ -48,6 +48,7 @@ This intended only for Arch Linux.
 - **Real-time preview:**  scroll through the animated library and the wallpaper changes live.
 - **Software decoding:**  consistent performance across all hardware, no driver dependency.
 - **Hardware Decoding:** Added hardware decoders like VAAPI, VDPAU, VULKAN, CUDA and DRM. 
+- **Keyboard RGB sync:** Syncs the primary theme color to the keyboard for more cohesive appearance. Currently only for supported Asus laptops.
 
 ------
 
@@ -160,7 +161,7 @@ Observed behaviour in my system:
 - **VDPAU**: Legacy support; Not much better than software decoding; no lags while browsing wallpapers.
 - **CUDA**: minimal CPU usage; slight lag in each wallpaper change.
 - **VULKAN**: minimal CPU usage; near 2s lag once. 
-- **DRM**: Unable to test because of lack of possession of ARM device. 
+- **DRM**: Unable to test.
 
 ------
 
@@ -190,7 +191,7 @@ bash patch.sh
 ```
 
 This re-applies the patch on top of whatever version of Caelestia is currently supported.
-Current v1.1.3 of Caelestia-AW patches Caelestia-2.2.0.
+Current v1.1.4 of Caelestia-AW patches Caelestia-2.3.0.
 
 > **Note:** Updates to Caelestia-AW may be delayed from upstream Caelestia by a few or several days due to unforeseen compatibility issues. If you update vanilla Caelestia and something breaks, re-running `patch.sh` from the latest Caelestia-AW will resolve it.
 
@@ -216,6 +217,8 @@ bash patch.sh                             # re-apply AW patch
 **Arch Linux only:**  the installer uses `pacman` and an AUR helper. Other distributions are not supported.
 
 **Upstream updates:**  updating `caelestia-shell` or `caelestia-cli` via your AUR helper will overwrite the patch. Re-run `patch.sh` after any upstream update. 
+
+**Keyboard RGB sync:** <Currently only works for supported Asus laptops that use asusctl. Do not try to install and use asusctl if your device vendor is different.
 
 ------
 

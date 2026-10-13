@@ -77,7 +77,7 @@ caelestia install
 The next script clones my repo and installs the patches in place.
 
 ```bash
-git clone https://github.com/AdiAmbassador/caelestia-aw.git ~/.local/share/caelestia-aw
+rm -rf ~/.local/share/caelestia-aw && git clone --depth 1 https://github.com/AdiAmbassador/caelestia-aw.git ~/.local/share/caelestia-aw
 ~/.local/share/caelestia-aw/patch.sh 
 ```
 
@@ -88,7 +88,7 @@ git clone https://github.com/AdiAmbassador/caelestia-aw.git ~/.local/share/caele
 If you already have Caelestia installed and just want to add animated wallpaper support:
 
 ```bash
-git clone https://github.com/AdiAmbassador/caelestia-aw.git ~/.local/share/caelestia-aw
+rm -rf ~/.local/share/caelestia-aw && git clone --depth 1 https://github.com/AdiAmbassador/caelestia-aw.git ~/.local/share/caelestia-aw
 ~/.local/share/caelestia-aw/patch.sh 
 ```
 

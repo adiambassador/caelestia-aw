@@ -144,6 +144,8 @@ echo -e "${MAGENTA}Starting installation of Caelestia Animated Wallpaper patches
 echo
 
 # Clone repo
+rm -rf /tmp/caelestia-shell-fork /tmp/caelestia-cli-fork
+
 log "Cloning online shell fork..."
 git clone --depth 1 "$SHELL_REPO" /tmp/caelestia-shell-fork >/dev/null 2>>"$LOG_FILE" &
 spinner $! "Cloning shell repo"

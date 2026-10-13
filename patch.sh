@@ -124,7 +124,7 @@ EOF
     echo -e "${RESET}${BOLD}		            Caelestia Animated Wallpaper Patch Installer${RESET}"
     echo -e "${DIM}                                A feature addition fork of Caelestia${RESET}"
     echo -e "${DIM}                                           Version: 1.1.4${RESET}"
-    echo -e "${DIM}                                      Patches: Caelestia 2.3.0${RESET}"
+    echo -e "${DIM}                                      Patches: Caelestia 2.5.0${RESET}"
     echo
     echo -e "${CYAN}$BORDER${RESET}"
     echo
@@ -185,7 +185,7 @@ run_step "CMake configuration" cmake -B /tmp/caelestia-shell-fork/build \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DCMAKE_INSTALL_SYSCONFDIR=/etc \
     -DCMAKE_BUILD_TYPE=Release \
-    -DVERSION="2.3.0"
+    -DVERSION="2.5.0"
 
 run_compile_step "Compiling C++ plugins" cmake --build /tmp/caelestia-shell-fork/build
 run_step "Shell files patched" sudo cmake --install /tmp/caelestia-shell-fork/build

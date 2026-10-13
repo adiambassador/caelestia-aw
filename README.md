@@ -16,7 +16,7 @@ https://github.com/user-attachments/assets/47f61a0c-7610-493e-8a5c-aeed5731cdc2
 
 ------
 
-<div align="center"><sub><em>News: added v2.3.0 compatibility + keyboard RGB sync</em></sub></div>
+<div align="center"><sub><em>News: added v2.5.0 compatibility + keyboard RGB sync</em></sub></div>
 
 ## What is this?
 
